@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - OsloVagas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 25px 35px;
+      border-radius: 10px;
+      width: 360px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    }
+    h2 {
+      text-align: center;
+      color: #22d3ee;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #22d3ee;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #06b6d4;
+    }
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login OsloVagas</h2>
+
+    <label for="serverUrl">Servidor (ex: http://localhost:8080)</label>
+    <input type="text" id="serverUrl" placeholder="http://localhost:8080">
+
+    <label for="username">Usuário</label>
+    <input type="text" id="username" placeholder="Seu usuário">
+
+    <label for="password">Senha</label>
+    <input type="password" id="password" placeholder="Sua senha">
+
+    <button id="loginBtn">Entrar</button>
+
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById("loginBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    // 🟩 Função para normalizar URL (corrige httlp:// etc.)
+    function normalizeUrl(url) {
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "http://" + url;
+      }
+      return url.replace(/^httlp:\/\//i, "http://");
+    }
+
+    // 🔐 Evento de login
+    loginBtn.addEventListener("click", async () => {
+      let server = document.getElementById("serverUrl").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!server || !username || !password) {
+        statusMsg.textContent = "⚠️ Preencha todos os campos.";
+        statusMsg.style.color = "#f87171";
+        return;
+      }
+
+      server = normalizeUrl(server);
+
+      try {
+        const response = await fetch(`${server}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 200 && data.token) {
+          // ✅ Salva token e servidor na sessão (válido enquanto a aba estiver aberta)
+          sessionStorage.setItem("jwtToken", data.token);
+          sessionStorage.setItem("serverUrl", server);
+
+          statusMsg.textContent = "✅ Login bem-sucedido!";
+          statusMsg.style.color = "#10b981";
+
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1000);
+        } else if (response.status === 401) {
+          statusMsg.textContent = data.message || "❌ Usuário ou senha inválidos.";
+          statusMsg.style.color = "#f87171";
+        } else {
+          statusMsg.textContent = data.message || "❌ Erro ao autenticar.";
+          statusMsg.style.color = "#f87171";
+        }
+      } catch (error) {
+        console.error(error);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      }
+    });
+  </script>
+</body>
+</html>

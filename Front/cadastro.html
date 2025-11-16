@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Usuário - OsloVagas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 25px 35px;
+      border-radius: 10px;
+      width: 380px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    }
+    h2 {
+      text-align: center;
+      color: #22d3ee;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #22d3ee;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #06b6d4;
+    }
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .error-list {
+      text-align: left;
+      margin-top: 10px;
+      background: #7f1d1d;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .error-list li {
+      margin-left: 15px;
+      font-size: 13px;
+      color: #fecaca;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cadastro de Usuário</h2>
+
+    <label for="serverUrl">Servidor (ex: http://localhost:8080)</label>
+    <input type="text" id="serverUrl" placeholder="http://localhost:8080">
+
+    <label for="name">Nome</label>
+    <input type="text" id="name" placeholder="Seu nome completo">
+
+    <label for="username">Usuário</label>
+    <input type="text" id="username" placeholder="Seu nome de usuário">
+
+    <label for="password">Senha</label>
+    <input type="password" id="password" placeholder="Sua senha">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="seu@email.com">
+
+    <label for="phone">Telefone</label>
+    <input type="text" id="phone" placeholder="(xx) xxxxx-xxxx">
+
+    <label for="experience">Experiência</label>
+    <textarea id="experience" placeholder="Descreva sua experiência"></textarea>
+
+    <label for="education">Formação</label>
+    <input type="text" id="education" placeholder="Sua formação acadêmica">
+
+    <button id="registerBtn">Cadastrar</button>
+
+    <div class="status" id="statusMsg"></div>
+    <ul id="errorList" class="error-list" style="display:none;"></ul>
+  </div>
+
+  <script>
+    document.getElementById("registerBtn").addEventListener("click", async () => {
+      const statusMsg = document.getElementById("statusMsg");
+      const errorList = document.getElementById("errorList");
+      const server = document.getElementById("serverUrl").value.trim();
+
+      statusMsg.textContent = "";
+      errorList.style.display = "none";
+      errorList.innerHTML = "";
+
+      if (!server) {
+        statusMsg.textContent = "⚠️ Informe o IP ou domínio do servidor.";
+        statusMsg.style.color = "#f87171";
+        return;
+      }
+
+      const payload = {
+        name: document.getElementById("name").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        experience: document.getElementById("experience").value.trim(),
+        education: document.getElementById("education").value.trim(),
+      };
+
+      try {
+        const response = await fetch(`${server}/users`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 201) {
+          statusMsg.textContent = `✅ ${data.message || "Usuário criado com sucesso!"}`;
+          statusMsg.style.color = "#10b981";
+          return;
+        }
+
+        // ⚠️ Tratamento de erros específicos
+        if (response.status === 409) {
+          statusMsg.textContent = `⚠️ ${data.message || "Conflito: usuário ou email já existe."}`;
+          statusMsg.style.color = "#fbbf24";
+          return;
+        }
+
+        if (response.status === 422) {
+          statusMsg.textContent = `❌ ${data.message || "Erro de validação."}`;
+          statusMsg.style.color = "#f87171";
+
+          if (data.details && data.details.length > 0) {
+            errorList.style.display = "block";
+            data.details.forEach(d => {
+              const li = document.createElement("li");
+              li.textContent = `${d.field}: ${d.error}`;
+              errorList.appendChild(li);
+            });
+          }
+          return;
+        }
+
+        statusMsg.textContent = `❌ ${data.message || "Erro desconhecido."}`;
+        statusMsg.style.color = "#f87171";
+      } catch (error) {
+        console.error(error);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      }
+    });
+  </script>
+</body>
+</html>

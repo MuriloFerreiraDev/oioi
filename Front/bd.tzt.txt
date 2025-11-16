@@ -1,0 +1,32 @@
+-- ========================================
+-- BANCO DE DADOS: OsloVagas
+-- ========================================
+
+-- 1️⃣ Cria o banco de dados (se ainda não existir)
+CREATE DATABASE IF NOT EXISTS oslovagas
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_general_ci;
+
+-- 2️⃣ Usa o banco
+USE oslovagas;
+
+-- 3️⃣ Cria a tabela de usuários
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(150),
+    role VARCHAR(20) DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4️⃣ (Opcional) Insere um usuário de teste (senha “1234” criptografada com BCrypt)
+INSERT INTO users (username, password, name, email, role)
+VALUES (
+    'admin',
+    '$2a$10$TKh8H1.PVkqlLx8bsa7O..uS5bE6p0G7WZyohI8JFoThyJmFtvM3K', -- senha 1234
+    'Administrador',
+    'admin@osloai.com',
+    'admin'
+);

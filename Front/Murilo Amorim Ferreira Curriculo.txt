@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Currículo - Murilo Ferreira</title>
+<style>
+    body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; margin: 40px; }
+    h1, h2 { color: #2E86C1; margin-bottom: 5px; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
+    p, li { font-size: 14px; }
+    .section { margin-bottom: 20px; }
+    ul { margin: 5px 0 5px 20px; }
+    .contact, .skills { display: flex; flex-wrap: wrap; gap: 15px; }
+</style>
+</head>
+<body>
+
+<h1>MURILO FERREIRA</h1>
+<p><strong>Desenvolvedor de Software | Analista de Sistemas</strong></p>
+
+<div class="contact">
+<p>📧 muriloout@outlook.com</p>
+<p>📞 (19) 99119-0734</p>
+<p>🚗 CNH: B</p>
+<p>💻 <a href="https://github.com/MuriloFerreiraDev">github.com/MuriloFerreiraDev</a></p>
+<p>📍 Disponibilidade: Trabalho remoto + presencial | Disponível para mudança</p>
+</div>
+
+<div class="section">
+<h2>OBJETIVO</h2>
+<p>Atuar como Desenvolvedor de Software, aplicando conhecimentos em programação e infraestrutura de TI para criar soluções eficientes e escaláveis, com foco em back-end e integração de sistemas.</p>
+</div>
+
+<div class="section">
+<h2>SOBRE</h2>
+<p>Profissional em transição de carreira para desenvolvimento de software, com sólida experiência em suporte técnico e infraestrutura de TI. Atualmente finalizando (em 2025) o curso de Análise e Desenvolvimento de Sistemas pela UTFPR, e especializando-se em linguagens e frameworks para desenvolvimento back-end. Perfil analítico, com facilidade para aprender novas tecnologias e experiência prática em ambientes corporativos.</p>
+</div>
+
+<div class="section">
+<h2>EXPERIÊNCIA PROFISSIONAL</h2>
+<ul>
+<li><strong>2026 – Atual | Analista de TI — Quality Digital (Remoto)</strong>
+    <ul>
+        <li>Atendimento especializado a clientes na área de TI</li>
+        <li>Manutenção preventiva e corretiva de servidores e aplicações</li>
+        <li>Abertura e acompanhamento de chamados técnicos</li>
+    </ul>
+</li>
+<li><strong>2024 | Técnico em TI — Klop Soluções em TI (Ponta Grossa – PR)</strong>
+    <ul>
+        <li>Suporte técnico remoto e presencial a clientes</li>
+        <li>Manutenção de estações, servidores e sistemas de terceiros</li>
+        <li>Configuração de hospedagem e verificação de backups</li>
+    </ul>
+</li>
+<li><strong>2023 – 2024 | Técnico em TI — PLSS Soluções em TI (Ponta Grossa – PR)</strong>
+    <ul>
+        <li>Suporte remoto e presencial para resolução de problemas críticos</li>
+        <li>Configuração e manutenção de redes corporativas, firewalls e sistemas em nuvem</li>
+        <li>Implementação de soluções de infraestrutura</li>
+    </ul>
+</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>FORMAÇÃO ACADÊMICA</h2>
+<ul>
+<li>Análise e Desenvolvimento de Sistemas — UTFPR (Em andamento)</li>
+<li>Back-End Java (Profissionalizante) — EBAC (Em andamento)</li>
+<li>AWS Cloud — Udemy (Concluído)</li>
+<li>JavaScript Full Stack — Udemy (Conclusão: jan/2025)</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>PROJETOS</h2>
+<ul>
+<li><strong>OsloAI Chat:</strong> Desenvolvimento de aplicação back-end de chat profissional. Tecnologias: Java · Spring Boot · PostgreSQL</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>IDIOMAS</h2>
+<ul>
+<li>Português: Nativo</li>
+<li>Inglês: Avançado</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>COMPETÊNCIAS TÉCNICAS</h2>
+<div class="skills">
+<p><strong>Linguagens:</strong> Java · Dart · Python · JavaScript · C++ · PHP · HTML · CSS · Kotlin</p>
+<p><strong>Frameworks:</strong> Spring Boot · Node.js · Flutter · Angular</p>
+<p><strong>Bancos de Dados:</strong> PostgreSQL · MySQL</p>
+<p><strong>Integração de Sistemas:</strong> APIs RESTful (HTTP, JSON) · Consumo de APIs externas</p>
+<p><strong>Cloud & DevOps:</strong> AWS · Azure · GCP · Docker</p>
+</div>
+</div>
+
+</body>
+</html>

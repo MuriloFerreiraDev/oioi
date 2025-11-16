@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - OsloVagas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #1e293b;
+      padding: 25px 35px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      width: 420px;
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      color: #22d3ee;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      color: #22d3ee;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-top: 5px;
+      background: #0f172a;
+      color: #e5e7eb;
+      resize: none;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    #saveBtn {
+      background-color: #22d3ee;
+      color: #0f172a;
+    }
+    #saveBtn:hover {
+      background-color: #06b6d4;
+    }
+
+    #logoutBtn {
+      background-color: #fbbf24;
+      color: #0f172a;
+    }
+    #logoutBtn:hover {
+      background-color: #f59e0b;
+    }
+
+    #deleteBtn {
+      background-color: #ef4444;
+      color: white;
+    }
+    #deleteBtn:hover {
+      background-color: #dc2626;
+    }
+
+    .status {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Dashboard OsloVagas</h1>
+
+    <form id="updateForm">
+      <label>Nome:</label>
+      <input type="text" id="name" />
+
+      <label>Email:</label>
+      <input type="email" id="email" />
+
+      <label>Telefone:</label>
+      <input type="text" id="phone" />
+
+      <label>Experiência:</label>
+      <textarea id="experience" rows="3"></textarea>
+
+      <label>Educação:</label>
+      <textarea id="education" rows="3"></textarea>
+
+      <label>Senha (opcional):</label>
+      <input type="password" id="password" />
+
+      <button type="button" id="saveBtn">Salvar Alterações</button>
+      <button type="button" id="logoutBtn">Sair</button>
+      <button type="button" id="deleteBtn">Excluir Conta</button>
+    </form>
+
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <script>
+    const token = sessionStorage.getItem("jwtToken");
+    const serverUrl = sessionStorage.getItem("serverUrl");
+    const statusMsg = document.getElementById("statusMsg");
+
+    if (!token || !serverUrl) {
+      alert("⚠️ Sessão expirada. Faça login novamente.");
+      window.location.href = "login.html";
+    }
+
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const userId = payload.sub;
+
+    // 🔄 Carregar dados
+    async function carregarDados() {
+      try {
+        const response = await fetch(`${serverUrl}/users/${userId}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 200) {
+          preencherCampos(data);
+          statusMsg.textContent = "✅ Dados carregados com sucesso!";
+          statusMsg.style.color = "#10b981";
+        } else if (response.status === 401) {
+          statusMsg.textContent = "❌ Sessão expirada. Faça login novamente.";
+          statusMsg.style.color = "#f87171";
+          setTimeout(() => window.location.href = "login.html", 1500);
+        } else {
+          statusMsg.textContent = "❌ Erro ao carregar dados.";
+          statusMsg.style.color = "#f87171";
+        }
+      } catch (err) {
+        console.error(err);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      }
+    }
+
+    function preencherCampos(user) {
+      document.getElementById("name").value = user.name || "";
+      document.getElementById("email").value = user.email || "";
+      document.getElementById("phone").value = user.phone || "";
+      document.getElementById("experience").value = user.experience || "";
+      document.getElementById("education").value = user.education || "";
+    }
+
+    // 💾 Atualizar usuário
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const body = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        experience: document.getElementById("experience").value,
+        education: document.getElementById("education").value
+      };
+
+      const password = document.getElementById("password").value;
+      if (password) body.password = password;
+
+      try {
+        const response = await fetch(`${serverUrl}/users/${userId}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 200) {
+          statusMsg.textContent = "✅ Dados atualizados com sucesso!";
+          statusMsg.style.color = "#10b981";
+        } else if (response.status === 422) {
+          statusMsg.textContent = "⚠️ Erros de validação. Verifique os campos.";
+          statusMsg.style.color = "#fbbf24";
+        } else {
+          statusMsg.textContent = data.message || "❌ Erro ao atualizar usuário.";
+          statusMsg.style.color = "#f87171";
+        }
+      } catch (err) {
+        console.error(err);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      }
+    });
+
+    // 🚪 Logout funcional
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      statusMsg.textContent = "Encerrando sessão...";
+      statusMsg.style.color = "#fbbf24";
+
+      try {
+        const response = await fetch(`${serverUrl}/logout`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 200) {
+          statusMsg.textContent = data.message || "✅ Logout realizado com sucesso!";
+          statusMsg.style.color = "#10b981";
+        } else if (response.status === 401) {
+          statusMsg.textContent = data.message || "⚠️ Token inválido ou expirado.";
+          statusMsg.style.color = "#f87171";
+        } else {
+          statusMsg.textContent = "❌ Erro ao encerrar sessão.";
+          statusMsg.style.color = "#f87171";
+        }
+      } catch (error) {
+        console.error("Erro ao fazer logout:", error);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      } finally {
+        // Limpa sessão e redireciona
+        setTimeout(() => {
+          sessionStorage.clear();
+          window.location.href = "login.html";
+        }, 1200);
+      }
+    });
+
+    // ❌ Excluir conta
+    document.getElementById("deleteBtn").addEventListener("click", async () => {
+      if (!confirm("⚠️ Tem certeza que deseja excluir sua conta?")) return;
+
+      try {
+        const response = await fetch(`${serverUrl}/users/${userId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 200) {
+          statusMsg.textContent = "✅ Conta excluída com sucesso!";
+          statusMsg.style.color = "#10b981";
+          setTimeout(() => {
+            sessionStorage.clear();
+            window.location.href = "login.html";
+          }, 1500);
+        } else {
+          statusMsg.textContent = data.message || "❌ Erro ao excluir conta.";
+          statusMsg.style.color = "#f87171";
+        }
+      } catch (error) {
+        console.error("Erro ao excluir conta:", error);
+        statusMsg.textContent = "🚫 Erro ao conectar ao servidor.";
+        statusMsg.style.color = "#f87171";
+      }
+    });
+
+    // 🚀 Carrega dados ao iniciar
+    carregarDados();
+  </script>
+</body>
+</html>
